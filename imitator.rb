@@ -11,27 +11,27 @@ puts "Initializing bot as #{imitating}"
 
 bot = Cinch::Bot.new do
   configure do |c|
-    c.nick = "#{imitating}_bot"
-    c.realname = "#{imitating}_bot"
+    c.nick = "#{imitating}`"
+    c.realname = "#{imitating}`"
     c.server = "irc.amazdong.com"
-    c.channels = [ "#interns2" ]
+    c.channels = [ "#fj2" ]
   end
 
   on :message, /.+/ do |m, message|
-    return unless rand(12) < 1
+    if rand(100) <= 5 # <= 4 ~~> 4% chance to talk
+      #sleep rand(25)
 
-    sleep rand(25)
+      src = "#{retort_url}/markov/create?identifier=#{imitating}&medium=irc.amazdong.com&channel=interns"
+      uri = URI.parse(src)
+      http = Net::HTTP.new(uri.host, uri.port)
 
-    src = "#{retort_url}/markov/create?identifier=#{imitating}&medium=irc.amazdong.com&channel=interns"
-    uri = URI.parse(src)
-    http = Net::HTTP.new(uri.host, uri.port)
+      request = Net::HTTP::Get.new(uri.request_uri)
+      response = http.request(request)
 
-    request = Net::HTTP::Get.new(uri.request_uri)
-    response = http.request(request)
+      return if response.code == 500 || response.code == '500'
 
-    return if response.code == 500 || response.code == '500'
-
-    m.reply response.body
+      m.reply response.body
+    end
   end
 
   on :message, /#{imitating}/ do |m, message|
